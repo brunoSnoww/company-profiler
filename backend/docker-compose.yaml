@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+
+  fastify:
+    build: ./api
+    environment:
+      GOOGLE_API_KEY: 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
+    ports:
+      - "3000:3000"

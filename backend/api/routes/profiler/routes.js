@@ -1,5 +1,5 @@
 const { getTextFromUrl } = require('../utils/getTextFromUrl')
-const { PROMPT_1_EXTRACTION, PROMPT_2_KEYWORDS } = require('../utils/prompts')
+const { PROMPT_1_EXTRACTION, PROMPT_2_KEYWORDS } = require('./prompts/prompts')
 const { extractJsonString } = require('../utils/extractJsonString')
 
 module.exports = async function profilerRoutes (fastify, _opts) {
@@ -17,7 +17,6 @@ module.exports = async function profilerRoutes (fastify, _opts) {
       try {
         const textContent = await getTextFromUrl(url)
 
-        // Step 1: Get the core profile (returns a JSON string)
         const coreProfileResponse = await lm.chat({
           messages: [{ role: 'user', content: PROMPT_1_EXTRACTION.replace('{scraped_text}', textContent) }],
           response_format: { type: 'json_object' }
@@ -26,7 +25,6 @@ module.exports = async function profilerRoutes (fastify, _opts) {
         const coreProfileSanitize = extractJsonString(coreProfileResponse)
         const coreProfile = JSON.parse(coreProfileSanitize)
 
-        // Step 2: Get the keywords using the parsed core profile
         const keywordsResponse = await lm.chat({
           messages: [{
             role: 'user',

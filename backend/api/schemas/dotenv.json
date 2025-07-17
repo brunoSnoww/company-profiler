@@ -1,7 +1,7 @@
 {
   "type": "object",
   "$id": "schema:dotenv",
-  "required": ["OPENAI_API_KEY"],
+  "required": ["GOOGLE_API_KEY"],
   "properties": {
     "NODE_ENV": {
       "type": "string",
@@ -11,7 +11,7 @@
       "type": "integer",
       "default": 3000
     },
-    "OPENAI_API_KEY": {
+    "GOOGLE_API_KEY": {
       "type": "string",
       "minLength": 1
     }
