@@ -41,8 +41,20 @@ module.exports = async function profilerRoutes (fastify, _opts) {
           ...keywords
         }
       } catch (error) {
-        request.log.error(error, `Failed to generate profile for URL: ${url}`)
-        return reply.code(500).send({ error: 'An internal error occurred while generating the profile.' })
+        request.log.error(
+          {
+            url,
+            message: error.message,
+            stack: error.stack,
+            responseData: error.response?.data
+          },
+            `Failed to generate profile for URL: ${url}`
+        )
+        // Use the error status code if available, otherwise fallback to 500
+        // best practices say we should only return 4** and 500, to not give enough information about the server
+        // but let's keep simple
+        const statusCode = error.response?.status || 500
+        return reply.code(statusCode).send({ error: 'An internal error occurred while generating the profile.' })
       }
     }
   })

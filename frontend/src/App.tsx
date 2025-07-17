@@ -6,9 +6,9 @@ import { CompanyCard } from "./components/CompanyCard.tsx";
 import { TextInput } from "./components/TextInput.tsx";
 
 function App() {
-    const [textInput, setTextInput] = useState("https://www.atera.com/");
+    const [textInput, setTextInput] = useState("https://www.hcltech.com/");
     const [isInvalidUrl, setIsInvalidUrl] = useState(false);
-    const [urlList, setUrlList] = useState<Array<string>>([]);
+    const [urlList, setUrlList] = useState<Array<string>>([])
     const [isButtonDisabled, setIsDisabled] = useState(false);
     const handleClick = (url: string) => {
         if (!isValidUrl(url)) {
@@ -17,10 +17,18 @@ function App() {
             setIsInvalidUrl(false);
             if (!urlList.includes(url)) {
                 setIsDisabled(true)
-                setUrlList(prevList => [url, ...prevList]);
+                setUrlList(prevList => Array.from(
+                    new Set([...prevList, url]))
+                )
             }
         }
     };
+
+    const onError = () => {
+        const newList = [...urlList]
+        newList.pop();
+        setUrlList(newList)
+    }
 
     return (
         <>
@@ -58,6 +66,7 @@ function App() {
                             url={url}
                             // not the best way to share such state, kept this way for simplicity
                             onLoad={() => setIsDisabled(false)}
+                            onError={onError}
                         />
                     </div>
                 ))}

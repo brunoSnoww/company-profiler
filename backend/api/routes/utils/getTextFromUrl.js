@@ -9,7 +9,14 @@ async function getTextFromUrl(pageUrl, maxLength = 4000) {
 
   try {
     const { data } = await axios.get(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+            '(KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        Connection: 'keep-alive'
+      },
+      timeout: 10000
     });
 
     const $ = cheerio.load(data);
@@ -24,7 +31,13 @@ async function getTextFromUrl(pageUrl, maxLength = 4000) {
 
     return textContent;
   } catch (error) {
-    console.error(`Error fetching or processing URL "${url}": ${error.message}`);
+    console.error(`Error fetching or processing URL "${url}":`, {
+      message: error.message,
+      code: error.code,
+      responseStatus: error.response?.status,
+      responseHeaders: error.response?.headers,
+      // To avoid logging huge data, avoid logging body
+    });
     throw new Error(`Failed to extract content from: ${url}`);
   }
 }

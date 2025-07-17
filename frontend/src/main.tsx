@@ -9,7 +9,8 @@ const qc = new QueryClient({
     defaultOptions: {
         queries: {
             staleTime: Infinity,
-            refetchOnMount: false
+            refetchOnMount: false,
+            refetchOnWindowFocus: false
         },
     },
 });
