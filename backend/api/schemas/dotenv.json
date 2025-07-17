@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$id": "schema:dotenv",
+  "required": ["OPENAI_API_KEY"],
+  "properties": {
+    "NODE_ENV": {
+      "type": "string",
+      "default": "development"
+    },
+    "PORT": {
+      "type": "integer",
+      "default": 3000
+    },
+    "OPENAI_API_KEY": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "fastify-app",
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "npm run lint",
+    "test": "tap \"test/**/*.test.js\"",
+    "start": "fastify start --options app.js --host 0.0.0.0 --port $PORT",
+    "dev": "npm run start -- --watch --pretty-logs --debug",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunoSnoww/fastify-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunoSnoww/fastify-app/issues"
+  },
+  "homepage": "https://github.com/brunoSnoww/fastify-app#readme",
+  "dependencies": {
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/cors": "^10.1.0",
+    "@fastify/env": "^5.0.2",
+    "@fastify/sensible": "^6.0.3",
+    "@fastify/swagger": "^9.5.1",
+    "@fastify/swagger-ui": "^5.2.3",
+    "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
+    "fastify": "^5.0.0",
+    "fastify-cli": "^4.2.0",
+    "fastify-lm": "^1.4.4",
+    "fastify-plugin": "^3.0.0",
+    "mongoose": "^8.8.3"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2",
+    "tap": "^16.1.0"
+  }
+}

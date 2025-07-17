@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "$id": "schema:document",
+  "additionalProperties": false,
+  "properties": {
+    "company_name": {
+      "type": "string"
+    },
+    "company_description": {
+      "type": "string"
+    },
+    "service_line": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tier1_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tier2_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
