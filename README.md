@@ -17,10 +17,8 @@ You can interact with the live, deployed application here:
 ## ✨ Key Features
 
 * **Automated Profile Generation**: Input a company URL and instantly get a structured JSON profile.
-* **Two-Step AI Analysis**: Utilizes a sophisticated "chain-of-thought" process to first extract core information and then generate strategic keywords.
+* **Two-Step AI Analysis**: Utilizes a two step approach to extract core information and then generate strategic keywords.
 * **Decoupled Architecture**: A robust client-server model allows the backend to be used by any client, whether it's the provided React app, a CLI, or another service.
-* **Modern Frontend**: A responsive and intuitive user interface built with React, Google Material UI, and React Query for efficient data fetching.
-
 ---
 
 ## 🏗️ Architecture
@@ -42,20 +40,36 @@ The frontend is a lightweight React application bootstrapped from scratch. It le
 
 ---
 
-## 🧠 Prompt Design Philosophy
+## Prompts
+In our application, we moved beyond a single, generic instruction and engineered two distinct prompts, each designed for a specific sub-task. This structured approach, inspired by the techniques in the book [Prompt Engineering for Generative AI](https://www.amazon.com.br/Prompt-Engineering-Generative-AI-Future-Proof/dp/109815343X/), was crucial for building a reliable system.
 
-The design of the prompts is heavily inspired by the structured techniques outlined in the book [Prompt Engineering for Generative AI](https://www.amazon.com.br/Prompt-Engineering-Generative-AI-Future-Proof/dp/109815343X/). The effectiveness of this application hinges on a **two-step prompting strategy** rather than a single, monolithic prompt. This "Divide and Conquer" approach ensures higher accuracy and is guided by key engineering principles:
+The core of our design is a **two-step prompting strategy**, a practical application of the **Divide Labor** principle. Instead of asking one prompt to do everything, we broke the problem down.
 
-* **1. Divide Labor (The Two-Step Chain)**: The task is broken down into two distinct steps.
-    * **Prompt 1 (Extraction)**: Focuses solely on extracting factual information: the company's name, description, and services.
-    * **Prompt 2 (Enrichment)**: Takes the clean output from the first step and uses it to perform a more interpretive task: generating strategic Tier 1 and Tier 2 keywords.
+---
 
-* **2. Give Direction (Persona-Based Prompting)**: Each prompt assigns a specific role to the AI. The extraction prompt uses a "Data Extraction Assistant" persona, while the keyword prompt uses a more specialized "Government Procurement Expert" persona. This focuses the model on the specific context of each sub-task.
+### Prompt 1: Core Profile Extraction
 
-* **3. Specify Format (Strict Schema Enforcement)**: Both prompts contain explicit instructions for the output to be a valid JSON object conforming to a precise schema. This is crucial for ensuring reliable communication between the AI and the backend service.
+The first prompt we developed is a specialist in data extraction. Its only job is to read the raw text from a company's website and pull out the fundamental, factual information.
 
-* **4. Provide Examples (Few-Shot Learning)**: To improve accuracy and guide the model's reasoning, the prompts include high-quality examples of the desired input-to-output transformation. This helps the model understand nuances, like the difference between a service and a feature.
+To build it, we applied several principles:
 
+* **Give Direction**: We assigned the AI the specific persona of a "Data Extraction Assistant." This focuses its attention on objective analysis rather than creative interpretation.
+* **Specify Format**: The prompt strictly instructs the model to return a JSON object with a predefined schema: `company_name`, `company_description`, and `service_line`. This guarantees a predictable output that our backend service can reliably process.
+* **Provide Examples**: We included a "few-shot" example directly in the prompt. This was key to teaching the model the nuance of our request, such as how to correctly identify a distinct service line versus a minor product feature.
+
+---
+
+### Prompt 2: Specialized Keyword Generation
+
+The second prompt is an enrichment specialist. It takes the clean, structured JSON from the first prompt as its input and performs a more interpretive task: creating strategic keywords.
+
+Its development followed the same structured approach:
+
+* **Give Direction**: This prompt adopts the more specialized persona of a "Government Procurement Expert." This guides the AI to think specifically in terms of search queries that would be used to find public contracts and opportunities.
+* **Specify Format**: The required output is, again, a strictly enforced JSON schema, but this time containing only `tier1_keywords` and `tier2_keywords`.
+* **Provide Examples**: The example in this prompt is critical for demonstrating the subtle difference between high-intent, specific Tier 1 keywords and the broader, related terms required for Tier 2.
+
+By developing each prompt with this deliberate, principle-driven method, we created a more robust, predictable, and accurate AI-powered system.
 ---
 
 ## 🛠️ Getting Started (Local Development)
