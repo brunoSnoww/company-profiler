@@ -1,164 +1,133 @@
 import React, { useState } from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
+import { Card, CardContent, Typography, Stack, Avatar, Divider, Box, Button, TextField, Chip } from '@mui/material';
+import { ChipList } from "./ChipList.tsx";
 import LabelIcon from '@mui/icons-material/Label';
-import TextField from '@mui/material/TextField';
-import { validateEmail } from "../utils/validateEmail";
-import { ChipList } from "./ChipList";
-import type {CompanyDataCardProps} from "../types/CompanyDataCardProps.ts";
-import {Avatar} from "@mui/joy";
+import DownloadIcon from '@mui/icons-material/Download';
+import type {CompanyDownloadData, CompanyProfile, ServiceLine} from "../types/types.ts";
+import { validateEmail } from "../utils/validateEmail.ts";
+import { handleDownload } from "../utils/downloadJson.ts";
 
-export const CompanyDataCard: React.FC<CompanyDataCardProps> = ({
-                                                                    company_name,
-                                                                    company_description,
-                                                                    service_line,
-                                                                    tier1_keywords,
-                                                                    tier2_keywords,
-                                                                }) => {
-    const [editablePOC, setEditablePOC] = useState("");
-    const [editableEmail, setEditableEmail] = useState('');
-    const [editableEmails, setEditableEmails] = useState<string[]>([]);
-    const [editableServiceLines, setEditableServiceLines] = useState(service_line);
+interface CompanyDataCardProps {
+    profile: CompanyProfile;
+    onUpdate: (profile: CompanyProfile) => void;
+}
+
+export const CompanyDataCard: React.FC<CompanyDataCardProps> = ({ profile, onUpdate }) => {
     const [newServiceLine, setNewServiceLine] = useState('');
+    const [newEmail, setNewEmail] = useState('');
     const [emailError, setEmailError] = useState(false);
 
-    const handleAddEmail = () => {
-        if (editableEmail && !editableEmails.includes(editableEmail)) {
-            if (validateEmail(editableEmail)) {
-                setEditableEmails([...editableEmails, editableEmail]);
-                setEditableEmail('');
-                setEmailError(false);
-            } else {
-                setEmailError(true);
-            }
-        }
-    };
+    const mainServiceData = profile.service_lines[0] || { description: '', tier1_keywords: [], tier2_keywords: [] };
 
-    const handleDeleteEmail = (emailToDelete: string) => {
-        setEditableEmails(editableEmails.filter(email => email !== emailToDelete));
+    const handleUpdatePOC = (poc: string) => {
+        onUpdate({ ...profile, poc });
     };
 
     const handleAddServiceLine = () => {
-        if (newServiceLine) {
-            setEditableServiceLines([...editableServiceLines, newServiceLine]);
+        if (newServiceLine && !profile.service_lines.find(sl => sl.name === newServiceLine)) {
+            const addedServiceLine: ServiceLine = {
+                name: newServiceLine,
+                description: mainServiceData.description,
+                tier1_keywords: mainServiceData.tier1_keywords,
+                tier2_keywords: mainServiceData.tier2_keywords,
+            };
+            onUpdate({ ...profile, service_lines: [...profile.service_lines, addedServiceLine] });
             setNewServiceLine('');
         }
     };
 
-    const handleDeleteServiceLine = (serviceLineToDelete: string) => {
-        setEditableServiceLines(editableServiceLines.filter(serviceLine => serviceLine !== serviceLineToDelete));
+    const handleDeleteServiceLine = (serviceNameToDelete: string) => {
+        const updatedServiceLines = profile.service_lines.filter(sl => sl.name !== serviceNameToDelete);
+        onUpdate({ ...profile, service_lines: updatedServiceLines });
+    };
+
+    const handleAddEmail = () => {
+        if (newEmail && validateEmail(newEmail)) {
+            const updatedEmails = Array.from(new Set([...(profile.emails || []), newEmail]));
+            onUpdate({ ...profile, emails: updatedEmails });
+            setNewEmail('');
+            setEmailError(false);
+        } else {
+            setEmailError(true);
+        }
+    };
+
+    const handleDeleteEmail = (emailToDelete: string) => {
+        const updatedEmails = profile.emails?.filter(e => e !== emailToDelete);
+        onUpdate({ ...profile, emails: updatedEmails });
+    };
+
+    const onDownloadClick = () => {
+        const downloadData: CompanyDownloadData = {
+            company_name: profile.company_name,
+            company_description: mainServiceData.description,
+            service_line: profile.service_lines.map(sl => sl.name),
+            tier1_keywords: mainServiceData.tier1_keywords,
+            tier2_keywords: mainServiceData.tier2_keywords,
+            // Add the POC and emails to the download object
+            poc: profile.poc,
+            emails: profile.emails,
+        };
+        handleDownload(downloadData);
     };
 
     return (
-        <Card sx={{ maxWidth: 700, m: 2, borderRadius: 3, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12)' }}>
+        <Card sx={{ maxWidth: 800, m: 2, borderRadius: 3, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12)' }}>
             <CardContent sx={{ p: 3 }}>
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-                    <Avatar>{company_name[0].toUpperCase()}</Avatar>
-                    <Typography variant="h5" component="div" fontWeight="bold">
-                        {company_name}
-                    </Typography>
+                <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar>{profile.company_name[0]?.toUpperCase()}</Avatar>
+                        <Typography variant="h5" component="div" fontWeight="bold">
+                            {profile.company_name}
+                        </Typography>
+                    </Stack>
+                    <Button
+                        variant="outlined"
+                        startIcon={<DownloadIcon />}
+                        onClick={onDownloadClick}
+                    >
+                        Download JSON
+                    </Button>
                 </Stack>
-
-                <Typography variant="body1" color="text.secondary">
-                    {company_description}
+                <Typography variant="body1" color="text.secondary" sx={{mt: 2}}>
+                    {mainServiceData.description}
                 </Typography>
             </CardContent>
 
-            <Divider variant="middle" />
+            <Divider />
 
-            <CardContent sx={{ p: 3 }}>
-                <Typography variant="subtitle1" fontWeight="bold">
-                    Service Lines
-                </Typography>
-                <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
-                    <TextField
-                        label="Add Line"
-                        value={newServiceLine}
-                        onChange={(e) => setNewServiceLine(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mt: 2 }}
-                    />
-                    <Button
-                        onClick={handleAddServiceLine}
-                        variant="contained"
-                        sx={{ mt: 1 }}
-
-                    >
-                        Add
-                    </Button>
-                </div>
-
-                <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
-                    {editableServiceLines.map((serviceLine) => (
-                        <Stack direction="row" alignItems="center" key={serviceLine}>
-                            <Chip label={serviceLine} variant="outlined" sx={{ mr: 1 }} />
-                            <Button
-                                size="small"
-                                onClick={() => handleDeleteServiceLine(serviceLine)}
-                                color="error">
-                                Delete
-                            </Button>
-                        </Stack>
+            <CardContent>
+                <Typography variant="subtitle1" fontWeight="bold">Service Lines</Typography>
+                <Box sx={{ display: 'flex', gap: 1, my: 2 }}>
+                    <TextField fullWidth size="small" label="Add new service line" value={newServiceLine} onChange={(e) => setNewServiceLine(e.target.value)} />
+                    <Button variant="contained" onClick={handleAddServiceLine}>Add</Button>
+                </Box>
+                <Stack direction="row" useFlexGap flexWrap="wrap" spacing={1}>
+                    {profile.service_lines.map((service) => (
+                        <Chip key={service.name} label={service.name} onDelete={() => handleDeleteServiceLine(service.name)} />
                     ))}
                 </Stack>
-
-                <ChipList
-                    title="Keywords"
-                    items={tier1_keywords}
-                    icon={<LabelIcon color="action" />}
-                    color="secondary"
-                />
-                <ChipList
-                    title="Industry Topics"
-                    items={tier2_keywords}
-                    icon={<LabelIcon color="action" />}
-                    color="default"
-                />
             </CardContent>
 
-            <CardContent sx={{ p: 3 }}>
-                <TextField
-                    label="Point of Contact"
-                    value={editablePOC}
-                    onChange={(e) => setEditablePOC(e.target.value)}
-                    fullWidth
-                    multiline
-                    rows={4}
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                />
+            <Divider />
 
-                <TextField
-                    label="Add Email"
-                    value={editableEmail}
-                    onChange={(e) => setEditableEmail(e.target.value)}
-                    fullWidth
-                    error={emailError}
-                    helperText={emailError && "Incorrect email format."}
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                />
-                <Button onClick={handleAddEmail} variant="contained" sx={{ mb: 2 }}>
-                    Add Email
-                </Button>
+            <CardContent>
+                <ChipList title="Keywords" items={mainServiceData.tier1_keywords} icon={<LabelIcon />} color="secondary" />
+                <ChipList title="Industry Topics" items={mainServiceData.tier2_keywords} icon={<LabelIcon />} />
+            </CardContent>
 
-                <Stack direction="column" spacing={1}>
-                    {editableEmails.map((emailItem) => (
-                        <Stack direction="row" alignItems="center" key={emailItem}>
-                            <Chip label={emailItem} variant="outlined" sx={{ mr: 1 }} />
-                            <Button
-                                size="small"
-                                onClick={() => handleDeleteEmail(emailItem)}
-                                color="error">
-                                Delete
-                            </Button>
-                        </Stack>
+            <Divider />
+
+            <CardContent>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>Contact Information 📞</Typography>
+                <TextField fullWidth label="Point of Contact (POC)" value={profile.poc || ''} onChange={(e) => handleUpdatePOC(e.target.value)} variant="outlined" sx={{ mb: 3 }} />
+                <Box sx={{ display: 'flex', gap: 1, my: 2 }}>
+                    <TextField fullWidth size="small" label="Add Contact Email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} error={emailError} helperText={emailError ? "Invalid email format" : ""} />
+                    <Button variant="contained" onClick={handleAddEmail}>Add</Button>
+                </Box>
+                <Stack direction="row" useFlexGap flexWrap="wrap" spacing={1}>
+                    {profile.emails?.map((email) => (
+                        <Chip key={email} label={email} onDelete={() => handleDeleteEmail(email)} />
                     ))}
                 </Stack>
             </CardContent>

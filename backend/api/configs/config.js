@@ -11,11 +11,17 @@ module.exports = fp(
       openai: {
         models: [
           {
-            name: 'lm', // the name of the model instance on your app
-            provider: 'openai', // openai, google, claude, deepseek or any available provider
+            name: 'openai',
+            provider: 'openai',
             model: 'gpt-4o-mini',
             apiKey: fastify.secrets.OPENAI_API_KEY
-          }
+          },
+          {
+            name: 'google',
+            provider: 'google',
+            model: 'gemini-2.0-flash-lite',
+            apiKey: fastify.secrets.GOOGLE_API_KEY
+          },
         ]
       }
     })

@@ -1,12 +1,15 @@
 {
   "type": "object",
   "$id": "schema:query",
-  "required": ["url"],
+  "required": ["url","model"],
   "additionalProperties": false,
   "properties": {
     "url": {
       "type": "string",
       "format": "uri"
+    },
+    "model": {
+      "type": "string"
     }
   }
 }

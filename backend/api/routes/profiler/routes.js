@@ -11,16 +11,20 @@ module.exports = async function profilerRoutes (fastify, _opts) {
       response: { 200: fastify.getSchema('schema:document') }
     },
     handler: async function getProfile (request, reply) {
-      const { lm } = fastify
-      const { url } = request.query
+      const { url, model } = request.query
+      const lm = fastify[model]
+
+      request.log.info({ url, model }, `Received request to generate profile for URL: ${url}`)
 
       try {
         const textContent = await getTextFromUrl(url)
+        request.log.info({ url, textLength: textContent.length }, 'Successfully scraped text content')
 
         const coreProfileResponse = await lm.chat({
           messages: [{ role: 'user', content: PROMPT_1_EXTRACTION.replace('{scraped_text}', textContent) }],
           response_format: { type: 'json_object' }
         })
+        request.log.info({ url, model, usage: coreProfileResponse.usage }, 'LLM generated core profile')
 
         const coreProfileSanitize = extractJsonString(coreProfileResponse)
         const coreProfile = JSON.parse(coreProfileSanitize)
@@ -33,8 +37,12 @@ module.exports = async function profilerRoutes (fastify, _opts) {
           response_format: { type: 'json_object' }
         })
 
+        request.log.info({ url, model, usage: keywordsResponse.usage }, 'LLM generated keywords')
+
         const keywordSanitize = extractJsonString(keywordsResponse)
         const keywords = JSON.parse(keywordSanitize)
+
+        request.log.info({ url, model }, 'Successfully generated and parsed all data')
 
         return {
           ...coreProfile,
@@ -44,15 +52,14 @@ module.exports = async function profilerRoutes (fastify, _opts) {
         request.log.error(
           {
             url,
+            model,
             message: error.message,
             stack: error.stack,
             responseData: error.response?.data
           },
             `Failed to generate profile for URL: ${url}`
         )
-        // Use the error status code if available, otherwise fallback to 500
-        // best practices say we should only return 4** and 500, to not give enough information about the server
-        // but let's keep simple
+
         const statusCode = error.response?.status || 500
         return reply.code(statusCode).send({ error: 'An internal error occurred while generating the profile.' })
       }
