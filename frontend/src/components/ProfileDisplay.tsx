@@ -14,7 +14,7 @@ interface ProfileDisplayProps {
 
 export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({ profile, onProfileUpdate, model }) => {
     const { data, status, isError } = useQuery({
-        queryKey: ['companyProfile', profile?.url, model],
+        queryKey: ['companyProfile', profile?.url],
         queryFn: () => getCompanyProfile(profile!.url, model),
         enabled: !!profile && profile.service_lines.length === 0,
         retry: 1,

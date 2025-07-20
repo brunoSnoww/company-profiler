@@ -1,6 +1,5 @@
 import type {CompanyDownloadData, Model} from "../types/types.tsx";
 
-
 export async function getCompanyProfile(url: string,model: Model): Promise<CompanyDownloadData | null> {
     const fullUrl =
         `https://company-profiler-be-production.up.railway.app/profiler?url=${url}&model=${model}`;

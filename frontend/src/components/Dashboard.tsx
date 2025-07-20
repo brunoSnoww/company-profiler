@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Grid } from "@mui/material";
 import { ProfileSidebar } from "./ProfileSidebar.tsx";
 import { ProfileDisplay } from "./ProfileDisplay.tsx";
-import type {CompanyProfile} from "../types/types.tsx";
+import type {CompanyProfile, Model} from "../types/types.tsx";
 
 export const Dashboard: React.FC = () => {
     const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
     const [activeUrl, setActiveUrl] = useState<string | null>(null);
-    const [selectedModel, setSelectedModel] = useState<'openai' | 'google'>('openai');
+    const [selectedModel, setSelectedModel] = useState<Model>('openai');
 
     const handleGenerateProfile = (url: string) => {
         if (!profiles.some(p => p.url === url)) {

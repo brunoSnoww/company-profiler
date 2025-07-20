@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, List, ListItemButton, ListItemText, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Box, Button, List, ListItemButton, ListItemText, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { isValidUrl } from "../utils/isValidUrl.ts";
 import type {CompanyProfile, Model} from "../types/types.tsx";
 
@@ -29,8 +29,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profiles, active
 
     return (
         <Box sx={{ p: 2, height: '100%', borderRight: '1px solid #ddd' }}>
-            <Typography variant="h6" gutterBottom>Create or Select a Profile</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 2 }}>
                 <TextField
                     fullWidth
                     size="small"
