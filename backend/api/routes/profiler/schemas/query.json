@@ -1,7 +1,7 @@
 {
   "type": "object",
   "$id": "schema:query",
-  "required": ["url","model"],
+  "required": ["url", "model"],
   "additionalProperties": false,
   "properties": {
     "url": {
@@ -9,8 +9,8 @@
       "format": "uri"
     },
     "model": {
-      "type": "string"
+      "type": "string",
+      "enum": ["google", "openai"]
     }
   }
 }
-

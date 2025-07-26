@@ -8,7 +8,7 @@ export interface ServiceLine {
 export interface CompanyProfile {
     url: string;
     company_name: string;
-    service_lines: ServiceLine[];
+    service_line: ServiceLine[];
     poc?: string;
     emails?: string[];
 }

@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Box, Button, List, ListItemButton, ListItemText, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { isValidUrl } from "../utils/isValidUrl.ts";
 import type {CompanyProfile, Model} from "../types/types.tsx";
+import {NavLink} from "react-router-dom";
 
 interface ProfileSidebarProps {
     profiles: CompanyProfile[];
-    activeUrl: string | null;
-    onProfileSelect: (url: string) => void;
     onGenerate: (url:string) => void;
     selectedModel: string;
     onModelChange: (model: Model) => void;
@@ -14,7 +13,7 @@ interface ProfileSidebarProps {
 
 const models: Model[] = ['openai', 'google'];
 
-export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profiles, activeUrl, onProfileSelect, onGenerate, selectedModel, onModelChange }) => {
+export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profiles,onGenerate, selectedModel, onModelChange }) => {
     const [textInput, setTextInput] = useState("https://www.hcltech.com/");
     const [isInvalidUrl, setIsInvalidUrl] = useState(false);
 
@@ -59,13 +58,20 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ profiles, active
                 {profiles.map((profile) => (
                     <ListItemButton
                         key={profile.url}
-                        selected={activeUrl === profile.url}
-                        onClick={() => onProfileSelect(profile.url)}
+                        component={NavLink}
+                        to={`/profile/${encodeURIComponent(profile.url)}`}
+                        sx={{
+                            '&.active': {
+                                backgroundColor: 'action.selected',
+                                fontWeight: 'fontWeightBold',
+                            },
+                        }}
                     >
-                        <ListItemText primary={profile.company_name} secondary={profile.url} />
+                        <ListItemText primary={profile.company_name} />
                     </ListItemButton>
                 ))}
             </List>
+
         </Box>
     );
 };

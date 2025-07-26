@@ -8,7 +8,6 @@ module.exports = async function (fastify, opts) {
     dir: path.join(__dirname, 'schemas'),
     indexPattern: /^loader.js$/i
   })
-
   await fastify.register(require('./configs/config'))
 
   fastify.register(AutoLoad, {

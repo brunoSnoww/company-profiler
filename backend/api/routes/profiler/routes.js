@@ -3,6 +3,7 @@ const { PROMPT_1_EXTRACTION, PROMPT_2_KEYWORDS } = require('./prompts/prompts')
 const { extractJsonString } = require('../utils/extractJsonString')
 
 module.exports = async function profilerRoutes (fastify, _opts) {
+
   fastify.route({
     method: 'GET',
     url: '/',
